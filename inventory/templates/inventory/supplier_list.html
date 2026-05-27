@@ -1,0 +1,37 @@
+{% extends "inventory/base.html" %}
+{% block title %}Поставщики{% endblock %}
+{% block page_title %}Поставщики{% endblock %}
+{% block header_actions %}
+<a href="{% url 'supplier_create' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Добавить</a>
+{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Название</th><th>Контакт</th><th>Телефон</th><th>Email</th><th>Статус</th><th>Товаров</th><th></th></tr></thead>
+            <tbody>
+            {% for sup in suppliers %}
+            <tr>
+                <td class="fw-semibold">{{ sup.name }}</td>
+                <td class="small">{{ sup.contact_person|default:"—" }}</td>
+                <td class="small">{{ sup.phone|default:"—" }}</td>
+                <td class="small">{{ sup.email|default:"—" }}</td>
+                <td>
+                    {% if sup.is_active %}<span class="badge bg-success">Активен</span>
+                    {% else %}<span class="badge bg-secondary">Неактивен</span>{% endif %}
+                </td>
+                <td><span class="badge bg-primary">{{ sup.products.count }}</span></td>
+                <td class="text-end">
+                    <a href="{% url 'supplier_update' sup.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+                    <a href="{% url 'supplier_delete' sup.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted py-4">Нет поставщиков</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "inventory/base.html" %}
+{% block title %}Категории{% endblock %}
+{% block page_title %}Категории{% endblock %}
+{% block header_actions %}
+<a href="{% url 'category_create' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Добавить</a>
+{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Название</th><th>Описание</th><th>Товаров</th><th>Создано</th><th></th></tr></thead>
+            <tbody>
+            {% for cat in categories %}
+            <tr>
+                <td class="fw-semibold">{{ cat.name }}</td>
+                <td class="text-muted small">{{ cat.description|default:"—"|truncatechars:60 }}</td>
+                <td><span class="badge bg-primary">{{ cat.products.count }}</span></td>
+                <td class="text-muted small">{{ cat.created_at|date:"d.m.Y" }}</td>
+                <td class="text-end">
+                    <a href="{% url 'category_update' cat.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+                    <a href="{% url 'category_delete' cat.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">Нет категорий</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "inventory/base.html" %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block page_title %}{{ product.name }}{% endblock %}
+{% block header_actions %}
+<div class="d-flex gap-2">
+    <a href="{% url 'product_update' product.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil me-1"></i>Редактировать</a>
+    <a href="{% url 'movement_create' %}?product={{ product.pk }}" class="btn btn-sm btn-success"><i class="bi bi-arrow-left-right me-1"></i>Движение</a>
+    <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Назад</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">Информация о товаре</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-5">Артикул (SKU)</dt><dd class="col-7"><code>{{ product.sku }}</code></dd>
+                    <dt class="col-5">Категория</dt><dd class="col-7">{{ product.category|default:"—" }}</dd>
+                    <dt class="col-5">Поставщик</dt><dd class="col-7">{{ product.supplier|default:"—" }}</dd>
+                    <dt class="col-5">Цена</dt><dd class="col-7 fw-bold">{{ product.price|floatformat:2 }} ₽</dd>
+                    <dt class="col-5">Остаток</dt>
+                    <dd class="col-7">
+                        <span class="fs-5 fw-bold {% if product.is_low_stock %}text-danger{% else %}text-success{% endif %}">
+                            {{ product.quantity }}
+                        </span> шт.
+                        {% if product.is_low_stock %}<span class="badge bg-warning text-dark ms-1">Мало!</span>{% endif %}
+                    </dd>
+                    <dt class="col-5">Мин. остаток</dt><dd class="col-7">{{ product.min_quantity }} шт.</dd>
+                    <dt class="col-5">Общая стоимость</dt><dd class="col-7">{{ product.total_value|floatformat:2 }} ₽</dd>
+                    <dt class="col-5">Описание</dt><dd class="col-7">{{ product.description|default:"—" }}</dd>
+                    <dt class="col-5">Создан</dt><dd class="col-7 small text-muted">{{ product.created_at|date:"d.m.Y H:i" }}</dd>
+                    <dt class="col-5">Обновлён</dt><dd class="col-7 small text-muted">{{ product.updated_at|date:"d.m.Y H:i" }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold d-flex justify-content-between">
+                <span>История движений</span>
+                <a href="{% url 'movement_create' %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg"></i></a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>Тип</th><th>Кол-во</th><th>Комментарий</th><th>Дата</th></tr></thead>
+                    <tbody>
+                    {% for mv in movements %}
+                    <tr>
+                        <td>
+                            {% if mv.movement_type == 'in' %}<span class="badge bg-success">Приход</span>
+                            {% elif mv.movement_type == 'out' %}<span class="badge bg-danger">Расход</span>
+                            {% else %}<span class="badge bg-secondary">Корр.</span>{% endif %}
+                        </td>
+                        <td>{{ mv.quantity }}</td>
+                        <td class="small text-muted">{{ mv.comment|default:"—"|truncatechars:40 }}</td>
+                        <td class="small text-muted">{{ mv.created_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center text-muted py-3">Движений нет</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
